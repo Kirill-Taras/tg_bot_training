@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 from handlers import start
 from settings.config import settings
+from services.scheduler import start_scheduler
 
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -24,6 +25,8 @@ dp.include_router(start.router)
 # запуск бота
 async def main():
     print("🚀 Бот запускается...")
+    # подключаем рассылку
+    start_scheduler(bot)
     try:
         await dp.start_polling(bot)
     except (KeyboardInterrupt, asyncio.CancelledError):
