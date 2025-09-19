@@ -10,6 +10,7 @@ from aiogram.types import Message
 from sqlalchemy import select
 
 from database.database import get_session, get_sessionmaker, get_engine
+from keyboards.menu import admin_menu, employee_menu
 from models.users import User
 from settings.config import settings
 from utils.validators import validate_full_name, validate_dob
@@ -101,6 +102,21 @@ async def process_dob(message: Message, state: FSMContext):
         await session.commit()
 
     await state.clear()  # очищаем FSM
+
+    data = await state.get_data()
+    # здесь сохраняем user в БД, например:
+    # user = User(name=data["name"], role=data["role"], telegram_id=message.from_user.id)
+    # session.add(user)
+    # await session.commit()
+
+    role = data.get("role")
+
+    if role == "admin":
+        await message.answer("Регистрация завершена ✅", reply_markup=admin_menu)
+    else:
+        await message.answer("Регистрация завершена ✅", reply_markup=employee_menu)
+
+    await state.clear()
     await message.answer(
         f"Приятно познакомиться, {full_name}! 🎉\n"
         "Твоя стажировка начинается сегодня. Желаем успехов!"

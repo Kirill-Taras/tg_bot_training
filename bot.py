@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-from handlers import start
+from handlers import start, menu
 from settings.config import settings
 from services.scheduler import start_scheduler
 
@@ -21,6 +21,7 @@ dp = Dispatcher(storage=storage)
 
 # подключаем маршрутизатор
 dp.include_router(start.router)
+dp.include_router(menu.router)
 
 # запуск бота
 async def main():
