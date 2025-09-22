@@ -105,9 +105,9 @@ async def process_dob(message: Message, state: FSMContext):
 
     data = await state.get_data()
     # здесь сохраняем user в БД, например:
-    # user = User(name=data["name"], role=data["role"], telegram_id=message.from_user.id)
-    # session.add(user)
-    # await session.commit()
+    user = User(name=data["name"], role=data["role"], telegram_id=message.from_user.id)
+    session.add(user)
+    await session.commit()
 
     role = data.get("role")
 

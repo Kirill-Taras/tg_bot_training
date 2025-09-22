@@ -62,17 +62,6 @@ async def materials(message: Message) -> None:
     await message.answer(text, disable_web_page_preview=True)
 
 
-@router.message(F.text == "🍽️ Меню ресторана")
-async def menu_restaurant(message: Message) -> None:
-    """
-    Выводит сообщение о меню ресторана.
-
-    Args:
-        message (Message): Сообщение от пользователя.
-    """
-    await message.answer("🍽️ Тут будут фото и описание блюд.")
-
-
 @router.message(F.text == "📝 Тесты")
 async def tests(message: Message) -> None:
     """
