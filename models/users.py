@@ -1,19 +1,21 @@
 from __future__ import annotations
-from datetime import datetime, date
+from datetime import date, datetime
 from enum import Enum
 from typing import Optional
 
-from sqlalchemy import Integer, String, Date, DateTime, Boolean, Enum as SQLEnum
+from sqlalchemy import (
+    Boolean, Column, Date, DateTime, Enum as SQLEnum, Integer, String, Text
+)
 from sqlalchemy.orm import Mapped, mapped_column
 from database.database import Base
 
 
 class UserStatus(str, Enum):
     """Статусы стажировки/работы сотрудника"""
-    PENDING = "ожидание"
-    TRAINING = "стажировка"
-    HIRED = "принят"
-    REJECTED = "не принят"
+    PENDING = "ожидание"     # ожидает подтверждения админа
+    TRAINING = "стажировка"  # проходит обучение
+    HIRED = "принят"         # принят на работу
+    REJECTED = "не принят"   # не принят
 
 
 class User(Base):
@@ -21,14 +23,15 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    telegram_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
-    full_name: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
-    role: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    dob: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
-    start_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
-    status: Mapped[UserStatus] = mapped_column(SQLEnum(UserStatus), default=UserStatus.PENDING)
-    onboarding_day: Mapped[int] = mapped_column(Integer, default=0)
-    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    telegram_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False, doc="ID пользователя в Telegram")
+    full_name: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, doc="ФИО сотрудника")
+    role: Mapped[str] = mapped_column(String(100), default="employee", nullable=False, doc="Роль: admin / employee")
+    position: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, doc="Должность")
+    dob: Mapped[Optional[date]] = mapped_column(Date, nullable=True, doc="Дата рождения")
+    start_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False, doc="Дата начала работы")
+    status: Mapped[UserStatus] = mapped_column(SQLEnum(UserStatus), default=UserStatus.PENDING, doc="Статус сотрудника")
+    onboarding_day: Mapped[int] = mapped_column(Integer, default=0, doc="Текущий день стажировки")
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, doc="Является ли администратором")
 
     def __repr__(self) -> str:
-        return f"<User {self.telegram_id} {self.full_name} ({self.status.value})>"
+        return f"<User {self.telegram_id} {self.full_name} ({self.role}, {self.status.value})>"
