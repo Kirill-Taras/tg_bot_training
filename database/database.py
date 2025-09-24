@@ -70,3 +70,8 @@ async def init_db(engine: AsyncEngine) -> None:
     # Открываем транзакцию DDL и применяем create_all синхронно через run_sync
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+
+engine: AsyncEngine = get_engine("sqlite+aiosqlite:///./data/db/bot.db", echo=True)
+
+SessionLocal: sessionmaker = get_sessionmaker(engine)

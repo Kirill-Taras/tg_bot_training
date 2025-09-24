@@ -3,7 +3,7 @@ from aiogram.types import Message
 from sqlalchemy import select
 
 from models.users import User
-from database.database import get_session
+from database.database import get_session, SessionLocal
 from keyboards.menu import employee_menu, admin_menu
 
 router: Router = Router()
@@ -19,7 +19,7 @@ async def get_user_role(telegram_id: int) -> str | None:
     Returns:
         str | None: Роль пользователя ("admin", "employee" или None, если не найден).
     """
-    async with get_session() as session:
+    async with get_session(SessionLocal) as session:
         result = await session.execute(
             select(User).where(User.telegram_id == telegram_id)
         )
@@ -39,27 +39,10 @@ async def show_menu(message: Message) -> None:
 
     if role == "admin":
         await message.answer("Главное меню (админ):", reply_markup=admin_menu)
-    elif role == "employee":
+    elif role == ["employee"]:
         await message.answer("Главное меню:", reply_markup=employee_menu)
     else:
         await message.answer("❌ Вы не зарегистрированы. Введите /start для начала.")
-
-
-@router.message(F.text == "📚 Учебные материалы")
-async def materials(message: Message) -> None:
-    """
-    Показывает список доступных учебных материалов.
-
-    Args:
-        message (Message): Сообщение от пользователя.
-    """
-    text: str = (
-        "📚 Доступные материалы:\n\n"
-        "1. Основы сервиса — [ссылка](https://example.com/doc1)\n"
-        "2. Техника безопасности — [ссылка](https://example.com/doc2)\n"
-        "3. Работа с гостями — [ссылка](https://example.com/doc3)"
-    )
-    await message.answer(text, disable_web_page_preview=True)
 
 
 @router.message(F.text == "📝 Тесты")
@@ -73,12 +56,29 @@ async def tests(message: Message) -> None:
     await message.answer("📝 Здесь можно будет пройти тест.")
 
 
-@router.message(F.text == "ℹ️ Контакты")
-async def contacts(message: Message) -> None:
-    """
-    Заглушка для раздела контактов.
+@router.message(F.text == "/myrole")
+async def check_my_role(message: Message):
+    async with get_session(SessionLocal) as session:
+        result = await session.execute(
+            select(User).where(User.telegram_id == message.from_user.id)
+        )
+        user: User | None = result.scalar_one_or_none()
+        if user:
+            await message.answer(f"👤 Ваша роль: {user.role}")
+        else:
+            await message.answer("❌ Вы не зарегистрированы.")
 
-    Args:
-        message (Message): Сообщение от пользователя.
-    """
-    await message.answer("ℹ️ Контакты менеджера: Иван Иванов 📞 +7 900 123-45-67")
+
+@router.message(F.text == "/delete_me")
+async def delete_me(message: Message):
+    async with get_session(SessionLocal) as session:
+        result = await session.execute(
+            select(User).where(User.telegram_id == message.from_user.id)
+        )
+        user = result.scalar_one_or_none()
+        if user:
+            await session.delete(user)
+            await session.commit()
+            await message.answer("🗑️ Ваш аккаунт удалён. Введите /start для повторной регистрации.")
+        else:
+            await message.answer("❌ Вас и так нет в базе.")

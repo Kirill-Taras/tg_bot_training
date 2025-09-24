@@ -80,7 +80,7 @@ def start_scheduler(bot):
     # Днём — 12:00 Красноярск
     scheduler.add_job(
         lambda: loop.create_task(send_daily_material(bot)),
-        CronTrigger(hour=16, minute=29)
+        CronTrigger(hour=22, minute=29)
     )
 
     scheduler.start()

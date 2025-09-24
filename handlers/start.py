@@ -23,7 +23,7 @@ session_factory = get_sessionmaker(engine)
 class Registration(StatesGroup):
     """Состояния для последовательного ввода данных сотрудника"""
     full_name = State()
-    role = State()
+    position = State()
     dob = State()
 
 
@@ -35,7 +35,6 @@ async def cmd_start(message: Message, state: FSMContext) -> None:
     Если нет — запускает последовательную регистрацию через FSM.
     """
     telegram_id = message.from_user.id
-    session_factory = get_sessionmaker(engine)
 
     async with get_session(session_factory) as session:
         user = await session.execute(select(User).where(User.telegram_id == telegram_id))
@@ -60,62 +59,54 @@ async def process_full_name(message: Message, state: FSMContext):
         )
         return
     await state.update_data(full_name=full_name)
-    await state.set_state(Registration.role)
+    await state.set_state(Registration.position)
     await message.answer("Отлично! А какая у тебя должность?")
 
 
 # 2. Получаем должность
-@router.message(Registration.role)
-async def process_role(message: Message, state: FSMContext):
-    role = message.text.strip().title()
-    await state.update_data(role=role)
+@router.message(Registration.position)
+async def process_position(message: Message, state: FSMContext):
+    position = message.text.strip().title()
+    await state.update_data(position=position)
     await state.set_state(Registration.dob)
     await message.answer("Отлично! Введи дату рождения в формате ДД.ММ.ГГГГ")
 
 
-# 3. Получаем дату рождения и сохраняем данные
 @router.message(Registration.dob)
 async def process_dob(message: Message, state: FSMContext):
-    session_factory = get_sessionmaker(engine)
     dob = validate_dob(message.text)
     if not dob:
-        await message.answer(
-            "Неверная дата рождения. Попробуй еще раз: ДД.MM.ГГГГ или '12 марта 2000'."
-        )
+        await message.answer("Неверная дата рождения. Попробуй еще раз: ДД.MM.ГГГГ")
         return
+
     data = await state.get_data()
     full_name = data.get("full_name")
-    role = data.get("role")
+    position = data.get("position")
 
     telegram_id = message.from_user.id
 
-    # Сохраняем в БД
     async with get_session(session_factory) as session:
         new_user = User(
             telegram_id=telegram_id,
             full_name=full_name,
-            role=role,
+            position=position,        # сохраняем должность
+            role="employee",          # роль задаём автоматически
             dob=dob,
-            start_date=datetime.now(ZoneInfo("Asia/Krasnoyarsk"))
+            start_date=datetime.now(ZoneInfo("Asia/Krasnoyarsk")),
         )
         session.add(new_user)
         await session.commit()
 
-    await state.clear()  # очищаем FSM
+    await state.clear()
 
-    data = await state.get_data()
-    # здесь сохраняем user в БД, например:
-    user = User(name=data["name"], role=data["role"], telegram_id=message.from_user.id)
-    session.add(user)
-    await session.commit()
+    await message.answer(
+        f"✅ Регистрация завершена!\n"
+        f"👤 Имя: {full_name}\n"
+        f"📌 Должность: {position}\n"
+        f"🛠️ Роль: employee"
+    )
 
-    role = data.get("role")
-
-    if role == "admin":
-        await message.answer("Регистрация завершена ✅", reply_markup=admin_menu)
-    else:
-        await message.answer("Регистрация завершена ✅", reply_markup=employee_menu)
-
+    await message.answer("Главное меню:", reply_markup=employee_menu)
     await state.clear()
     await message.answer(
         f"Приятно познакомиться, {full_name}! 🎉\n"

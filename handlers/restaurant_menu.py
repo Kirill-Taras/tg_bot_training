@@ -16,7 +16,7 @@ def get_categories_kb():
     for idx, cat in enumerate(MENU):
         buttons.append([InlineKeyboardButton(
             text=cat["category"],
-            callback_data=f"cat:{idx}"  # используем индекс вместо полного названия
+            callback_data=f"cat:{idx}"  # используем индекс
         )])
     buttons.append([InlineKeyboardButton(
         text="⬅️ Главное меню",
