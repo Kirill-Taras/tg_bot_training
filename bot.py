@@ -2,6 +2,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
+from handlers.admin import add_material, delete_material, manage_users
 from settings.config import settings
 from database.database import get_engine, get_sessionmaker, init_db
 
@@ -27,6 +28,9 @@ async def main():
     dp.include_router(contacts.router)
     dp.include_router(educational_material.router)
     dp.include_router(restaurant_menu.router)
+    dp.include_router(add_material.router)
+    dp.include_router(delete_material.router)
+    dp.include_router(manage_users.router)
 
     # --- Запускаем планировщик рассылок ---
     start_scheduler(bot)
