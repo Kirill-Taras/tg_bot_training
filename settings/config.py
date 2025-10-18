@@ -17,9 +17,6 @@ def load_settings() -> Settings:
     db_url = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./data/db/bot.db")
 
     if not bot_token:
-        # если запускаешь только инициализацию БД, можно не падать — но для бота токен нужен
-        # на данном этапе можно просто логировать; я предпочитаю выбрасывать ошибку,
-        # чтобы не забыть создать .env
         raise RuntimeError("BOT_TOKEN не задан в .env")
 
     return Settings(BOT_TOKEN=bot_token, DATABASE_URL=db_url)

@@ -6,11 +6,11 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from sqlalchemy import select
 
 from database.database import get_session, get_sessionmaker, get_engine
-from keyboards.menu import admin_menu, employee_menu
+from keyboards.menu import employee_menu
 from models.users import User
 from settings.config import settings
 from utils.validators import validate_full_name, validate_dob
@@ -25,6 +25,7 @@ class Registration(StatesGroup):
     full_name = State()
     position = State()
     dob = State()
+    phone = State()
 
 
 @router.message(Command("start"))
@@ -78,20 +79,45 @@ async def process_dob(message: Message, state: FSMContext):
     if not dob:
         await message.answer("Неверная дата рождения. Попробуй еще раз: ДД.MM.ГГГГ")
         return
+    await state.update_data(dob=dob)
+    await state.set_state(Registration.phone)
+
+    phone_kb = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="📱 Поделиться номером", request_contact=True)]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True,
+    )
+
+    await message.answer(
+        "Для завершения регистрации поделись своим номером телефона:",
+        reply_markup=phone_kb
+    )
+
+
+@router.message(F.contact)
+async def get_phone(message: Message, state: FSMContext):
+    """Получение номера телефона и завершение регистрации"""
+    phone_number = message.contact.phone_number
+    telegram_id = message.from_user.id
+    telegram_username = message.from_user.username
 
     data = await state.get_data()
     full_name = data.get("full_name")
     position = data.get("position")
+    dob = data.get("dob")
 
-    telegram_id = message.from_user.id
-
+    # Сохраняем пользователя в БД
     async with get_session(session_factory) as session:
         new_user = User(
             telegram_id=telegram_id,
             full_name=full_name,
-            position=position,        # сохраняем должность
-            role="employee",          # роль задаём автоматически
+            position=position,
+            role="employee",
             dob=dob,
+            phone=phone_number,  # <--- теперь сохраняем номер!
+            telegram_username=telegram_username,  # <--- и ник
             start_date=datetime.now(ZoneInfo("Asia/Krasnoyarsk")),
         )
         session.add(new_user)
@@ -103,11 +129,11 @@ async def process_dob(message: Message, state: FSMContext):
         f"✅ Регистрация завершена!\n"
         f"👤 Имя: {full_name}\n"
         f"📌 Должность: {position}\n"
-        f"🛠️ Роль: employee"
+        f"📞 Телефон: {phone_number}\n"
+        f"🛠️ Роль: employee",
+        reply_markup=employee_menu,
     )
 
-    await message.answer("Главное меню:", reply_markup=employee_menu)
-    await state.clear()
     await message.answer(
         f"Приятно познакомиться, {full_name}! 🎉\n"
         "Твоя стажировка начинается сегодня. Желаем успехов!"

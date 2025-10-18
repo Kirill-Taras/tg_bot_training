@@ -1,7 +1,6 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from data_bot.materials_dict import MATERIALS  # импортируем словарь материалов
 from aiogram import Router, F, types
-
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from data_bot.materials_dict import MATERIALS  # словарь вида {"Название": "URL"}
 
 router = Router()
 
@@ -10,27 +9,11 @@ def get_materials_categories_kb() -> InlineKeyboardMarkup:
     """
     Возвращает клавиатуру с категориями учебных материалов.
     """
-    buttons = []
-    for category in MATERIALS.keys():
-        buttons.append([InlineKeyboardButton(
-            text=category,
-            callback_data=f"material_cat:{category}"
-        )])
+    buttons = [
+        [InlineKeyboardButton(text=category, callback_data=f"material_cat:{category}")]
+        for category in MATERIALS.keys()
+    ]
     buttons.append([InlineKeyboardButton(text="⬅️ Главное меню", callback_data="back_main")])
-    return InlineKeyboardMarkup(inline_keyboard=buttons)
-
-
-def get_material_links_kb(category: str) -> InlineKeyboardMarkup:
-    """
-    Возвращает клавиатуру с ссылками на материалы выбранной категории.
-    """
-    buttons = []
-    for item in MATERIALS[category]:
-        buttons.append([InlineKeyboardButton(
-            text=item["title"],
-            url=item["url"]  # открытие внешней ссылки
-        )])
-    buttons.append([InlineKeyboardButton(text="⬅️ Назад", callback_data="back_to_materials")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
@@ -39,18 +22,31 @@ async def show_materials(message: types.Message):
     """
     Показывает список категорий учебных материалов.
     """
-    await message.answer("Выберите категорию:", reply_markup=get_materials_categories_kb())
+    await message.answer("📘 Выберите категорию:", reply_markup=get_materials_categories_kb())
 
 
 @router.callback_query(F.data.startswith("material_cat:"))
-async def show_material_links(callback: types.CallbackQuery):
+async def show_material_link(callback: types.CallbackQuery):
     """
-    Показывает кнопки с ссылками на материалы выбранной категории.
+    Показывает ссылку на материал выбранной категории.
     """
     category = callback.data.split("material_cat:")[1]
+    url = MATERIALS.get(category)
+
+    if not url:
+        await callback.answer("Материал не найден 😔", show_alert=True)
+        return
+
     await callback.message.edit_text(
-        f"📄 Материалы по категории: {category}",
-        reply_markup=get_material_links_kb(category)
+        f"📖 <b>{category}</b>\n\n"
+        f"Ознакомиться с материалом можно по ссылке ниже 👇",
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(text="🔗 Перейти к материалу", url=url)],
+                [InlineKeyboardButton(text="⬅️ Назад", callback_data="back_to_materials")]
+            ]
+        )
     )
 
 
@@ -59,7 +55,13 @@ async def back_to_materials(callback: types.CallbackQuery):
     """
     Возврат к списку категорий учебных материалов.
     """
-    await callback.message.edit_text(
-        "Выберите категорию:",
-        reply_markup=get_materials_categories_kb()
-    )
+    await callback.message.edit_text("📘 Выберите категорию:", reply_markup=get_materials_categories_kb())
+
+
+@router.callback_query(F.data == "back_main")
+async def back_main(callback: types.CallbackQuery):
+    """
+    Возврат в главное меню (например, ReplyKeyboardMarkup с командами).
+    """
+    await callback.message.delete()
+    await callback.message.answer("📲 Главное меню открыто. Выберите действие.")
