@@ -1,12 +1,15 @@
 from aiogram import Router, types, F
-from database.database import get_session
+from database.database import get_session, get_engine, get_sessionmaker
 from models.users import User  # предполагается, что User у тебя уже есть
+from settings.config import settings
 
 router = Router()
+engine = get_engine(settings.DATABASE_URL, echo=True)
+session_factory = get_sessionmaker(engine)
 
 @router.message(F.text == "👥 Пользователи")
 async def list_users(message: types.Message):
-    async for session in get_session():
+    async with get_session(session_factory) as session:
         users = await session.execute(User.__table__.select())
         users = users.fetchall()
         if not users:
@@ -22,7 +25,7 @@ async def list_users(message: types.Message):
 @router.message(lambda msg: msg.text.isdigit())
 async def user_action_menu(message: types.Message):
     user_id = int(message.text)
-    async for session in get_session():
+    async with get_session(session_factory) as session:
         user = await session.get(User, user_id)
         if not user:
             await message.answer("❌ Пользователь не найден.")
@@ -42,7 +45,7 @@ async def user_action_menu(message: types.Message):
 @router.message(F.text.startswith("🗑 Удалить"))
 async def delete_user(message: types.Message):
     user_name = message.text.replace("🗑 Удалить ", "")
-    async for session in get_session():
+    async with get_session(session_factory) as session:
         user = await session.execute(User.__table__.select().where(User.full_name == user_name))
         user = user.scalar_one_or_none()
         if not user:

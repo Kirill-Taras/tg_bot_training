@@ -2,10 +2,13 @@ from aiogram import Router, types, F
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove
-from database.database import get_session
+from database.database import get_session, get_engine, get_sessionmaker
 from models.materials import Material
+from settings.config import settings
 
 router = Router()
+engine = get_engine(settings.DATABASE_URL, echo=True)
+session_factory = get_sessionmaker(engine)
 
 class AddMaterialStates(StatesGroup):
     title = State()
@@ -68,7 +71,7 @@ async def get_show_day(message: types.Message, state: FSMContext):
 
     data = await state.get_data()
 
-    async for session in get_session():
+    async with get_session(session_factory) as session:
         material = Material(
             title=data['title'],
             text=data.get('text'),

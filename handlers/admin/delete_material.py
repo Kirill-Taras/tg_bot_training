@@ -1,12 +1,15 @@
 from aiogram import Router, types, F
-from database.database import get_session
+from database.database import get_session, get_engine, get_sessionmaker
 from models.materials import Material
+from settings.config import settings
 
 router = Router()
+engine = get_engine(settings.DATABASE_URL, echo=True)
+session_factory = get_sessionmaker(engine)
 
 @router.message(F.text.lower() == "удалить материал")
 async def list_materials(message: types.Message):
-    async for session in get_session():
+    async with get_session(session_factory) as session:
         materials = await session.execute(
             Material.__table__.select()
         )
@@ -24,7 +27,7 @@ async def list_materials(message: types.Message):
 @router.message(lambda msg: msg.text.isdigit())
 async def delete_material_by_id(message: types.Message):
     material_id = int(message.text)
-    async for session in get_session():
+    async with get_session(session_factory) as session:
         material = await session.get(Material, material_id)
         if not material:
             await message.answer("❌ Материал не найден.")
