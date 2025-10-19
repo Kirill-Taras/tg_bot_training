@@ -1,27 +1,30 @@
 from __future__ import annotations
+
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.filters import Command
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup
 from sqlalchemy import select
 
-from database.database import get_session, get_sessionmaker, get_engine
+from database.database import get_engine, get_session, get_sessionmaker
 from keyboards.menu import employee_menu
 from models.users import User
 from settings.config import settings
-from utils.validators import validate_full_name, validate_dob
+from utils.validators import validate_dob, validate_full_name
 
 router = Router()
 engine = get_engine(settings.DATABASE_URL, echo=True)
 session_factory = get_sessionmaker(engine)
 
+
 # --- FSM для регистрации пользователя ---
 class Registration(StatesGroup):
     """Состояния для последовательного ввода данных сотрудника"""
+
     full_name = State()
     position = State()
     dob = State()
@@ -38,7 +41,9 @@ async def cmd_start(message: Message, state: FSMContext) -> None:
     telegram_id = message.from_user.id
 
     async with get_session(session_factory) as session:
-        user = await session.execute(select(User).where(User.telegram_id == telegram_id))
+        user = await session.execute(
+            select(User).where(User.telegram_id == telegram_id)
+        )
         user_obj = user.scalars().first()
 
     if user_obj:
@@ -83,16 +88,14 @@ async def process_dob(message: Message, state: FSMContext):
     await state.set_state(Registration.phone)
 
     phone_kb = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="📱 Поделиться номером", request_contact=True)]
-        ],
+        keyboard=[[KeyboardButton(text="📱 Поделиться номером", request_contact=True)]],
         resize_keyboard=True,
         one_time_keyboard=True,
     )
 
     await message.answer(
         "Для завершения регистрации поделись своим номером телефона:",
-        reply_markup=phone_kb
+        reply_markup=phone_kb,
     )
 
 

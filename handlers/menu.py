@@ -1,10 +1,10 @@
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.types import Message
 from sqlalchemy import select
 
+from database.database import SessionLocal, get_session
+from keyboards.menu import admin_menu, employee_menu
 from models.users import User
-from database.database import get_session, SessionLocal
-from keyboards.menu import employee_menu, admin_menu
 
 router: Router = Router()
 
@@ -79,6 +79,8 @@ async def delete_me(message: Message):
         if user:
             await session.delete(user)
             await session.commit()
-            await message.answer("🗑️ Ваш аккаунт удалён. Введите /start для повторной регистрации.")
+            await message.answer(
+                "🗑️ Ваш аккаунт удалён. Введите /start для повторной регистрации."
+            )
         else:
             await message.answer("❌ Вас и так нет в базе.")

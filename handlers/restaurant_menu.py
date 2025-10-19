@@ -1,6 +1,7 @@
-from aiogram import Router, types, F
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import json
+
+from aiogram import F, Router, types
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 router = Router()
 
@@ -25,15 +26,15 @@ def get_subcategories_kb(category_idx: int):
     buttons = []
 
     for sub in category.get("subcategories", []):
-        buttons.append([
-            InlineKeyboardButton(text=sub["title"], url=sub["url"])
-        ])
+        buttons.append([InlineKeyboardButton(text=sub["title"], url=sub["url"])])
 
-    buttons.append([InlineKeyboardButton(text="⬅️ Назад", callback_data="back_to_main_menu")])
+    buttons.append(
+        [InlineKeyboardButton(text="⬅️ Назад", callback_data="back_to_main_menu")]
+    )
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-@router.message(F.text == "🍽 Меню ресторана")
+@router.message(F.text == "🍽️ Меню ресторана")
 async def show_main_menu(message: types.Message):
     """Показывает основное меню категорий"""
     await message.answer("📋 Выберите раздел:", reply_markup=get_main_menu_kb())
@@ -49,19 +50,19 @@ async def show_category(callback: types.CallbackQuery):
     if "subcategories" in category:
         await callback.message.edit_text(
             f"📖 {category['category']}",
-            reply_markup=get_subcategories_kb(category_idx)
+            reply_markup=get_subcategories_kb(category_idx),
         )
     # Если подкатегорий нет — просто ссылка
     elif "url" in category:
-        await callback.message.answer(
-            f"🔗 {category['category']}: {category['url']}"
-        )
+        await callback.message.answer(f"🔗 {category['category']}: {category['url']}")
 
 
 @router.callback_query(F.data == "back_to_main_menu")
 async def back_to_main_menu(callback: types.CallbackQuery):
     """Возврат к списку категорий"""
-    await callback.message.edit_text("📋 Выберите раздел:", reply_markup=get_main_menu_kb())
+    await callback.message.edit_text(
+        "📋 Выберите раздел:", reply_markup=get_main_menu_kb()
+    )
 
 
 @router.callback_query(F.data == "back_main")

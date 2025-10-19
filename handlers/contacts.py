@@ -1,8 +1,8 @@
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.types import Message
 from sqlalchemy import select
 
-from database.database import get_session, get_engine, get_sessionmaker
+from database.database import get_engine, get_session, get_sessionmaker
 from models.users import User
 from settings.config import settings
 
@@ -26,7 +26,11 @@ async def contacts(message: Message) -> None:
 
     text_parts = ["ℹ️ Контакты сотрудников:\n"]
     for u in users:
-        tg_link = f"[ссылка](https://t.me/{u.telegram_username})" if getattr(u, "telegram_username", None) else "—"
+        tg_link = (
+            f"[ссылка](https://t.me/{u.telegram_username})"
+            if getattr(u, "telegram_username", None)
+            else "—"
+        )
         text_parts.append(
             f"👤 *{u.full_name}*\n"
             f"📌 Должность: {u.position or '—'}\n"
@@ -34,4 +38,6 @@ async def contacts(message: Message) -> None:
             f"🔗 Telegram: {tg_link}\n"
         )
 
-    await message.answer("\n".join(text_parts), disable_web_page_preview=True, parse_mode="Markdown")
+    await message.answer(
+        "\n".join(text_parts), disable_web_page_preview=True, parse_mode="Markdown"
+    )

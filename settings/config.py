@@ -1,13 +1,17 @@
-from dataclasses import dataclass
 import os
+from dataclasses import dataclass
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
 
 @dataclass
 class Settings:
     BOT_TOKEN: str
     DATABASE_URL: str
+    ADMIN_ACCESS_CODE: str
+
 
 def load_settings() -> Settings:
     """
@@ -20,6 +24,7 @@ def load_settings() -> Settings:
         raise RuntimeError("BOT_TOKEN не задан в .env")
 
     return Settings(BOT_TOKEN=bot_token, DATABASE_URL=db_url)
+
 
 # создаём глобально объект настроек
 settings = load_settings()

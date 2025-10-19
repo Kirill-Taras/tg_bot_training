@@ -1,13 +1,13 @@
 import asyncio
+
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
+from database.database import get_engine, init_db
+from handlers import contacts, educational_material, menu, restaurant_menu, start
 from handlers.admin import add_material, delete_material, manage_users
-from settings.config import settings
-from database.database import get_engine, get_sessionmaker, init_db
-
-from handlers import start, menu, contacts, educational_material, restaurant_menu
 from services.scheduler import start_scheduler
+from settings.config import settings
 
 
 async def main():
@@ -15,7 +15,6 @@ async def main():
 
     # --- Настройка базы ---
     engine = get_engine(settings.DATABASE_URL, echo=True)
-    session_factory = get_sessionmaker(engine)
     await init_db(engine)  # создаёт таблицы, если их нет
 
     # --- Настройка бота ---

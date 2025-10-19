@@ -26,7 +26,7 @@ def validate_dob(dob_str: str) -> Optional[date]:
     Ожидается формат 'ДД.ММ.ГГГГ'.
     """
     try:
-        dob = dateparser.parse(dob_str, languages=['ru'])
+        dob = dateparser.parse(dob_str, languages=["ru"])
         if not dob:
             return None
         dob = dob.date()

@@ -1,5 +1,6 @@
-from aiogram import Router, F, types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import F, Router, types
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from data_bot.materials_dict import MATERIALS  # словарь вида {"Название": "URL"}
 
 router = Router()
@@ -13,7 +14,9 @@ def get_materials_categories_kb() -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text=category, callback_data=f"material_cat:{category}")]
         for category in MATERIALS.keys()
     ]
-    buttons.append([InlineKeyboardButton(text="⬅️ Главное меню", callback_data="back_main")])
+    buttons.append(
+        [InlineKeyboardButton(text="⬅️ Главное меню", callback_data="back_main")]
+    )
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
@@ -22,7 +25,9 @@ async def show_materials(message: types.Message):
     """
     Показывает список категорий учебных материалов.
     """
-    await message.answer("📘 Выберите категорию:", reply_markup=get_materials_categories_kb())
+    await message.answer(
+        "📘 Выберите категорию:", reply_markup=get_materials_categories_kb()
+    )
 
 
 @router.callback_query(F.data.startswith("material_cat:"))
@@ -44,9 +49,13 @@ async def show_material_link(callback: types.CallbackQuery):
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [InlineKeyboardButton(text="🔗 Перейти к материалу", url=url)],
-                [InlineKeyboardButton(text="⬅️ Назад", callback_data="back_to_materials")]
+                [
+                    InlineKeyboardButton(
+                        text="⬅️ Назад", callback_data="back_to_materials"
+                    )
+                ],
             ]
-        )
+        ),
     )
 
 
@@ -55,7 +64,9 @@ async def back_to_materials(callback: types.CallbackQuery):
     """
     Возврат к списку категорий учебных материалов.
     """
-    await callback.message.edit_text("📘 Выберите категорию:", reply_markup=get_materials_categories_kb())
+    await callback.message.edit_text(
+        "📘 Выберите категорию:", reply_markup=get_materials_categories_kb()
+    )
 
 
 @router.callback_query(F.data == "back_main")
