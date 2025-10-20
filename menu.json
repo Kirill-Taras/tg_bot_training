@@ -1,0 +1,38 @@
+[
+  {
+    "category": "Основное меню",
+    "subcategories": [
+      {"title": "На закуску", "url": "https://yonote.link/zakuski"},
+      {"title": "Сыры", "url": "https://yonote.link/syry"},
+      {"title": "Брускетты и фокачча", "url": "https://yonote.link/brusketty"},
+      {"title": "Блюда из творога и яиц", "url": "https://yonote.link/yaica"},
+      {"title": "Салаты с сыром", "url": "https://yonote.link/salaty"},
+      {"title": "Супы", "url": "https://yonote.link/supy"},
+      {"title": "Паста", "url": "https://yonote.link/pasta"},
+      {"title": "Горячие блюда", "url": "https://yonote.link/goryachie"},
+      {"title": "Блюда на сковородке", "url": "https://yonote.link/skovorodka"},
+      {"title": "На открытом огне", "url": "https://yonote.link/ogne"},
+      {"title": "Пицца из печи", "url": "https://yonote.link/pizza"},
+      {"title": "Гарниры", "url": "https://yonote.link/garnir"},
+      {"title": "Десерты", "url": "https://yonote.link/desert"},
+      {"title": "Сырные тарелки и паста филата", "url": "https://yonote.link/syrnaya"},
+      {"title": "Соусы", "url": "https://yonote.link/sousy"}
+    ]
+  },
+  {
+    "category": "Детское меню",
+    "url": "https://yonote.link/kids"
+  },
+  {
+    "category": "Меню бара",
+    "subcategories": [
+      {"title": "Кофе", "url": "https://yonote.link/kofe"},
+      {"title": "Чай", "url": "https://yonote.link/chai"},
+      {"title": "Безалкогольные напитки", "url": "https://yonote.link/soft"},
+      {"title": "Алкогольные коктейли", "url": "https://yonote.link/kokteyli"},
+      {"title": "Настойки/Пиво", "url": "https://yonote.link/pivo"},
+      {"title": "Крепкие напитки", "url": "https://yonote.link/krepkie"},
+      {"title": "Вода/Газировка", "url": "https://yonote.link/voda"}
+    ]
+  }
+]
