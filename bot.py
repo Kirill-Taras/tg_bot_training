@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from database.database import get_engine, init_db
-from handlers import contacts, educational_material, menu, restaurant_menu, start
+from handlers import contacts, educational_material, menu, restaurant_menu, start, become_admin
 from handlers.admin import add_material, delete_material, manage_users
 from services.scheduler import start_scheduler
 from settings.config import settings
@@ -30,6 +30,7 @@ async def main():
     dp.include_router(add_material.router)
     dp.include_router(delete_material.router)
     dp.include_router(manage_users.router)
+    dp.include_router(become_admin.router)
 
     # --- Запускаем планировщик рассылок ---
     start_scheduler(bot)
