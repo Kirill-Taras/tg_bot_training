@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  bot:
+    build: .
+    container_name: tg_bot_training
+    command: python bot.py
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    working_dir: /app
