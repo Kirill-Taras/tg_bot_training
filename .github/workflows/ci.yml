@@ -28,7 +28,7 @@ jobs:
             echo "🔧 Rewriting .env file..."
             echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
             echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-            echo "ADMIN_ACCESS_CODE=${{ secrets.ADMIN_ACCESS_CODE }}" >> .env
+            echo "ADMIN_ACCESS_CODE=${{ secrets.ADMIN_IDS }}" >> .env
 
             echo "🐳 Rebuilding and restarting container..."
             docker-compose down
