@@ -29,19 +29,20 @@ async def list_users(message: types.Message):
             text += f"ID: {u.id} | {u.full_name} | роль: {u.role}\n"
 
         # Кнопки по каждому пользователю
-        keyboard = ReplyKeyboardMarkup(keyboard=[], resize_keyboard=True)
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
         for u in users:
             keyboard.keyboard.append(
                 [types.KeyboardButton(text=f"👤 Действия {u.id} — {u.full_name}")]
-                + [[types.KeyboardButton(text="🏠 Главное меню")]]
             )
+
+        # Добавляем кнопку "Главное меню" один раз
+        keyboard.keyboard.append([types.KeyboardButton(text="🏠 Главное меню")])
 
         await message.answer(
             text + "\nВыберите пользователя, чтобы изменить его роль или статус:",
             reply_markup=keyboard,
             parse_mode="HTML",
         )
-
 
 # --------------------------
 # Меню действий по пользователю

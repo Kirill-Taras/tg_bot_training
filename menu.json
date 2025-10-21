@@ -2,7 +2,7 @@
   {
     "category": "Основное меню",
     "subcategories": [
-      {"title": "На закуску", "url": "https://yonote.link/zakuski"},
+      {"title": "На закуску", "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/na-zakusku-iooaHIFjd7"},
       {"title": "Сыры", "url": "https://yonote.link/syry"},
       {"title": "Брускетты и фокачча", "url": "https://yonote.link/brusketty"},
       {"title": "Блюда из творога и яиц", "url": "https://yonote.link/yaica"},
@@ -21,18 +21,18 @@
   },
   {
     "category": "Детское меню",
-    "url": "https://yonote.link/kids"
+    "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/detskoe-menyu-EFDUobGtS0"
   },
   {
     "category": "Меню бара",
     "subcategories": [
-      {"title": "Кофе", "url": "https://yonote.link/kofe"},
-      {"title": "Чай", "url": "https://yonote.link/chai"},
-      {"title": "Безалкогольные напитки", "url": "https://yonote.link/soft"},
-      {"title": "Алкогольные коктейли", "url": "https://yonote.link/kokteyli"},
-      {"title": "Настойки/Пиво", "url": "https://yonote.link/pivo"},
-      {"title": "Крепкие напитки", "url": "https://yonote.link/krepkie"},
-      {"title": "Вода/Газировка", "url": "https://yonote.link/voda"}
+      {"title": "Кофе", "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/kofe-3YCsXb14Zv"},
+      {"title": "Чай", "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/chaj-Iz9rqRV8Gb"},
+      {"title": "Безалкогольные напитки", "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/bezalkogolnye-napitki-PbcGF9rFQC"},
+      {"title": "Алкогольные коктейли", "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/alkogolnye-koktejli-CAQhq0AfcI"},
+      {"title": "Настойки/Пиво", "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/nastojkipivo-nODXS8OU6n"},
+      {"title": "Крепкие напитки", "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/krepkie-alkogolnye-napitki-i8tKCzFnR4"},
+      {"title": "Вода/Газировка", "url": "https://syrovarnya.yonote.ru/share/syrovarny/doc/vodagazirovka-GUXCGlwL5b"}
     ]
   }
 ]
