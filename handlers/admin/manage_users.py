@@ -6,6 +6,7 @@ from database.database import get_engine, get_session, get_sessionmaker
 from keyboards.menu import admin_menu
 from models.users import User
 from settings.config import settings
+from sqlalchemy import select
 
 router = Router()
 engine = get_engine(settings.DATABASE_URL, echo=True)
