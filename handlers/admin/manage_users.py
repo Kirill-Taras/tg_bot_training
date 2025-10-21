@@ -1,4 +1,5 @@
 from aiogram import F, Router, types
+
 from aiogram.types import ReplyKeyboardMarkup
 
 from database.database import get_engine, get_session, get_sessionmaker
@@ -17,8 +18,8 @@ session_factory = get_sessionmaker(engine)
 @router.message(F.text == "👥 Пользователи")
 async def list_users(message: types.Message):
     async with get_session(session_factory) as session:
-        result = await session.execute(User.__table__.select())
-        users = result.fetchall()
+        result = await session.execute(select(User))
+        users = result.scalars().all()
 
         if not users:
             await message.answer("❌ Пользователей пока нет.")
