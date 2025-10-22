@@ -31,10 +31,10 @@ async def list_users(message: types.Message):
             text += f"ID: {u.id} | {u.full_name} | роль: {u.role}\n"
 
         # Кнопки по каждому пользователю
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+        keyboard = ReplyKeyboardMarkup(keyboard=[], resize_keyboard=True)
         for u in users:
             keyboard.keyboard.append(
-                [types.KeyboardButton(text=f"👤 Действия {u.id} — {u.full_name}")]
+                [types.KeyboardButton(text=f"Изменить {u.id} — {u.full_name}")]
             )
 
         # Добавляем кнопку "Главное меню" один раз
@@ -49,10 +49,10 @@ async def list_users(message: types.Message):
 # --------------------------
 # Меню действий по пользователю
 # --------------------------
-@router.message(F.text.startswith("👤 Действия"))
+@router.message(F.text.startswith("Изменить"))
 async def user_action_menu(message: types.Message):
     try:
-        user_id = int(message.text.split()[-1])  # "👤 Действия {id}"
+        user_id = int(message.text.split()[1])
     except (IndexError, ValueError):
         await message.answer("❌ Не удалось определить пользователя.")
         return
