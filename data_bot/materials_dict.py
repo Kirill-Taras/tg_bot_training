@@ -4,10 +4,10 @@
 """
 
 MATERIALS = {
-    "Знакомство": "https://yonote.ru/example1",
-    "Внешний вид": "https://yonote.ru/example2",
-    "Хостес": "https://yonote.ru/example3",
-    "Официант": "https://yonote.ru/example4",
-    "Кассир-лавочник": "https://yonote.ru/example5",
-    "Правила": "https://yonote.ru/example6",
+    "Знакомство": "https://syrovarnya.yonote.ru/share/syrovarny",
+    "Внешний вид": "https://syrovarnya.yonote.ru/share/syrovarny",
+    "Хостес": "https://syrovarnya.yonote.ru/share/syrovarny",
+    "Официант": "https://syrovarnya.yonote.ru/share/syrovarny",
+    "Кассир-лавочник": "https://syrovarnya.yonote.ru/share/syrovarny",
+    "Правила": "https://syrovarnya.yonote.ru/share/syrovarny",
 }
